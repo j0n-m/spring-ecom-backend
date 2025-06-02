@@ -56,9 +56,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category validateCategoryProperties(Category category) {
-        if (category.getCategoryName() == null || category.getCategoryName().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category name cannot be empty");
-        }
+//        if (category.getCategoryName() == null || category.getCategoryName().isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category name cannot be empty");
+//        }
         return category;
     }
 
