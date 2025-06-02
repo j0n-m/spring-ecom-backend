@@ -27,6 +27,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void createCategory(Category category) {
+        if (category.getCategoryId() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot specify a category ID in the " +
+                    "payload");
+        }
         validateCategoryProperties(category);
 
         categoryRepository.save(category);
@@ -52,10 +56,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category validateCategoryProperties(Category category) {
-        if (category.getCategoryId() != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot specify a category ID in the " +
-                    "payload");
-        }
         if (category.getCategoryName() == null || category.getCategoryName().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category name cannot be empty");
         }

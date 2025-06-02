@@ -41,7 +41,7 @@ public class CategoryController {
     @PutMapping("/api/public/categories/{categoryId}")
     public ResponseEntity<String> updateCategory(@PathVariable("categoryId") Long categoryId, @RequestBody Category category) {
         Category updatedCategory = categoryService.updateCategory(categoryId, category);
-        return new ResponseEntity<>("Category id: " + updatedCategory.getCategoryId() + "is updated",
+        return new ResponseEntity<>("Category id: " + updatedCategory.getCategoryId() + " is updated",
                 HttpStatus.OK);
     }
 
