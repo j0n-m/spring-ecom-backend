@@ -1,6 +1,8 @@
 package com.ecommerce.spring_ecommerce.service;
 
 import com.ecommerce.spring_ecommerce.model.Category;
+import com.ecommerce.spring_ecommerce.repository.CategoryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -10,34 +12,31 @@ import java.util.List;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
-    private final List<Category> categories = new ArrayList<>();
-    private Long nextId = 1L;
+    //private final List<Category> categories = new ArrayList<>();
+    private final CategoryRepository categoryRepository;
+
+    @Autowired
+    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
     @Override
     public List<Category> getAllCategories() {
-        return categories;
+        return categoryRepository.findAll();
     }
 
     @Override
     public void createCategory(Category category) {
-//        if (category.getCategoryName() == null || category.getCategoryName().isEmpty()) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category name cannot be empty");
-//        }
         validateCategoryProperties(category);
 
-        category.setCategoryId(nextId++);
-        categories.add(category);
+        categoryRepository.save(category);
     }
 
     @Override
     public String deleteCategory(Long categoryId) {
-        Category category =
-                categories.stream()
-                        .filter(c -> c.getCategoryId().equals(categoryId))
-                        .findFirst()
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category was not found"));
+        Category category = getCategoryById(categoryId);
 
-        categories.remove(category);
+        categoryRepository.delete(category);
 
         return "Category '" + category.getCategoryName() + "' deleted successfully";
     }
@@ -46,12 +45,17 @@ public class CategoryServiceImpl implements CategoryService {
     public Category updateCategory(Long categoryId, Category category) {
         Category validCategory = validateCategoryProperties(getCategoryById(categoryId));
         validCategory.setCategoryName(category.getCategoryName());
+        categoryRepository.save(validCategory);
 
         return validCategory;
     }
 
     @Override
     public Category validateCategoryProperties(Category category) {
+        if (category.getCategoryId() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot specify a category ID in the " +
+                    "payload");
+        }
         if (category.getCategoryName() == null || category.getCategoryName().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category name cannot be empty");
         }
@@ -60,9 +64,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category getCategoryById(Long categoryId) {
-        return categories.stream()
-                .filter(c -> c.getCategoryId().equals(categoryId))
-                .findFirst()
+        return categoryRepository
+                .findById(categoryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category was not found"));
     }
 }
