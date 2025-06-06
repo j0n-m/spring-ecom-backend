@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -28,14 +30,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiErrorResponse<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request) {
-        String message = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         Map<String, String> response = new HashMap<>();
-        e.getBindingResult().getAllErrors().forEach(err -> {
-            String fieldName = ((FieldError) err).getField();
-            String errorMessage = err.getDefaultMessage();
+
+        List<ObjectError> errors = e.getBindingResult().getAllErrors();
+        for (int i = 0; i < errors.size(); i++) {
+            ObjectError error = errors.get(i);
+            String fieldName = ((FieldError) error).getField() + " (" + (i + 1) + ")";
+            String errorMessage = error.getDefaultMessage();
 
             response.put(fieldName, errorMessage);
-        });
+        }
 
         return new ApiErrorResponse<>("One or more fields are invalid.", response, request.getRequestURI());
     }
