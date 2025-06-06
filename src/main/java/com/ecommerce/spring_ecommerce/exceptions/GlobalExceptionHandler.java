@@ -19,14 +19,15 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ApiErrorResponse<?>> handleResponseException(ResponseStatusException e,
-                                                                       HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse<?>> handleResponseStatusException(ResponseStatusException e,
+                                                                             HttpServletRequest request) {
         return new ResponseEntity<ApiErrorResponse<?>>(new ApiErrorResponse<>(e.getStatusCode().toString(), new HashMap<String,
                 String>(Map.of("1", e.getReason() != null ? e.getReason() : "")),
                 request.getRequestURI()),
                 e.getStatusCode());
     }
 
+    //Handle hiberate validator exceptions
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiErrorResponse<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request) {
@@ -44,5 +45,17 @@ public class GlobalExceptionHandler {
         return new ApiErrorResponse<>("One or more fields are invalid.", response, request.getRequestURI());
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException e,
+                                                                  HttpServletRequest request) {
+        String message = e.getMessage();
+        return new ResponseEntity<String>(message, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(APIException.class)
+    public ResponseEntity<String> handleAPIException(APIException e, HttpServletRequest request) {
+        String message = e.getMessage();
+        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    }
 
 }
