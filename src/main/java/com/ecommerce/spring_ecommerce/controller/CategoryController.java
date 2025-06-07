@@ -1,15 +1,14 @@
 package com.ecommerce.spring_ecommerce.controller;
 
 import com.ecommerce.spring_ecommerce.model.Category;
+import com.ecommerce.spring_ecommerce.payload.CategoryDTO;
+import com.ecommerce.spring_ecommerce.payload.CategoryResponse;
 import com.ecommerce.spring_ecommerce.service.CategoryService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 public class CategoryController {
@@ -21,15 +20,15 @@ public class CategoryController {
     }
 
     @GetMapping("/api/public/categories")
-    public ResponseEntity<List<Category>> getAllCategories(HttpServletRequest request) {
-        List<Category> allCategories = categoryService.getAllCategories();
+    public ResponseEntity<CategoryResponse> getAllCategories() {
+        CategoryResponse allCategories = categoryService.getAllCategories();
         return ResponseEntity.ok(allCategories);
     }
 
     @PostMapping("/api/public/categories")
-    public ResponseEntity<String> createCategory(@Valid @RequestBody Category category) {
-        categoryService.createCategory(category);
-        return new ResponseEntity<>("Category '" + category.getCategoryName() + "' is created", HttpStatus.CREATED);
+    public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+        CategoryDTO savedCategory = categoryService.createCategory(categoryDTO);
+        return new ResponseEntity<>(savedCategory, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/api/admin/categories/{categoryId}")
