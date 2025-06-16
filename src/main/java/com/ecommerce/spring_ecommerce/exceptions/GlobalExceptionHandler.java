@@ -1,5 +1,6 @@
 package com.ecommerce.spring_ecommerce.exceptions;
 
+import com.ecommerce.spring_ecommerce.payload.APIResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -66,16 +67,18 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException e,
-                                                                  HttpServletRequest request) {
+    public ResponseEntity<APIResponse> handleResourceNotFoundException(ResourceNotFoundException e,
+                                                                       HttpServletRequest request) {
         String message = e.getMessage();
-        return new ResponseEntity<String>(message, HttpStatus.NOT_FOUND);
+        APIResponse apiResponse = new APIResponse(message, HttpStatus.NOT_FOUND.value());
+        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(APIException.class)
-    public ResponseEntity<String> handleAPIException(APIException e, HttpServletRequest request) {
+    public ResponseEntity<APIResponse> handleAPIException(APIException e, HttpServletRequest request) {
         String message = e.getMessage();
-        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        APIResponse apiResponse = new APIResponse(message, HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 
 }
