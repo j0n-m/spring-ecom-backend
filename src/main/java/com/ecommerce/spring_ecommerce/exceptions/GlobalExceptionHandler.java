@@ -1,6 +1,8 @@
 package com.ecommerce.spring_ecommerce.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -38,6 +40,24 @@ public class GlobalExceptionHandler {
             ObjectError error = errors.get(i);
             String fieldName = ((FieldError) error).getField() + " (" + (i + 1) + ")";
             String errorMessage = error.getDefaultMessage();
+
+            response.put(fieldName, errorMessage);
+        }
+
+        return new ApiErrorResponse<>("One or more fields are invalid.", response, request.getRequestURI());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrorResponse<?> handleMethodArgumentNotValidException(ConstraintViolationException e, HttpServletRequest request) {
+        Map<String, String> response = new HashMap<>();
+        List<ConstraintViolation<?>> errors = e.getConstraintViolations().stream().toList();
+
+        for (int i = 0; i < errors.size(); i++) {
+            ConstraintViolation<?> error = errors.get(i);
+            System.out.println(error);
+            String fieldName = error.getPropertyPath() + " (" + (i + 1) + ")";
+            String errorMessage = error.getMessageTemplate();
 
             response.put(fieldName, errorMessage);
         }

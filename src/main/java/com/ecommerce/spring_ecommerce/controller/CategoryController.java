@@ -1,6 +1,5 @@
 package com.ecommerce.spring_ecommerce.controller;
 
-import com.ecommerce.spring_ecommerce.model.Category;
 import com.ecommerce.spring_ecommerce.payload.CategoryDTO;
 import com.ecommerce.spring_ecommerce.payload.CategoryResponse;
 import com.ecommerce.spring_ecommerce.service.CategoryService;
@@ -32,18 +31,17 @@ public class CategoryController {
     }
 
     @DeleteMapping("/api/admin/categories/{categoryId}")
-    public ResponseEntity<String> deleteCategory(@PathVariable("categoryId") Long categoryId) {
-        String operationStatus = categoryService.deleteCategory(categoryId);
-        return new ResponseEntity<>(operationStatus, HttpStatus.OK);
+    public ResponseEntity<CategoryDTO> deleteCategory(@PathVariable("categoryId") Long categoryId) {
+        CategoryDTO deletedCategory = categoryService.deleteCategory(categoryId);
+        return new ResponseEntity<>(deletedCategory, HttpStatus.OK);
 
     }
 
     @PutMapping("/api/public/categories/{categoryId}")
-    public ResponseEntity<String> updateCategory(@PathVariable("categoryId") Long categoryId,
-                                                 @Valid @RequestBody Category category) {
-        Category updatedCategory = categoryService.updateCategory(categoryId, category);
-        return new ResponseEntity<>("Category id: " + updatedCategory.getCategoryId() + " is updated",
-                HttpStatus.OK);
+    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable("categoryId") Long categoryId,
+                                                      @Valid @RequestBody CategoryDTO categoryDTO) {
+        CategoryDTO updatedCategory = categoryService.updateCategory(categoryId, categoryDTO);
+        return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
     }
 
 }

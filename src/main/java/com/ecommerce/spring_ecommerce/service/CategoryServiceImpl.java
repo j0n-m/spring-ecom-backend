@@ -53,21 +53,22 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public String deleteCategory(Long categoryId) {
+    public CategoryDTO deleteCategory(Long categoryId) {
         Category category = getCategoryById(categoryId);
 
         categoryRepository.delete(category);
 
-        return "Category '" + category.getCategoryName() + "' deleted successfully";
+        return modelMapper.map(category, CategoryDTO.class);
     }
 
     @Override
-    public Category updateCategory(Long categoryId, Category category) {
+    public CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDTO) {
         Category validCategory = getCategoryById(categoryId);
-        validCategory.setCategoryName(category.getCategoryName());
-        categoryRepository.save(validCategory);
+        validCategory.setCategoryName(categoryDTO.getCategoryName());
 
-        return validCategory;
+        Category updatedCategory = categoryRepository.save(validCategory);
+
+        return modelMapper.map(updatedCategory, CategoryDTO.class);
     }
 
 
