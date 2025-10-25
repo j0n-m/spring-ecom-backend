@@ -29,4 +29,7 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    public double getSpecialPrice() {
+        return this.price - (this.price * this.discount / 100);
+    }
 }
