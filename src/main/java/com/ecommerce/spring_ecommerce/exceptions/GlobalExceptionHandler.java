@@ -4,6 +4,7 @@ import com.ecommerce.spring_ecommerce.payload.APIResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -77,6 +78,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(APIException.class)
     public ResponseEntity<APIResponse> handleAPIException(APIException e, HttpServletRequest request) {
         String message = e.getMessage();
+        APIResponse apiResponse = new APIResponse(message, HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<APIResponse> handlePropertyReferenceEx(PropertyReferenceException e, HttpServletRequest request) {
+        String message = "Invalid property name '" + e.getPropertyName() + "'.";
         APIResponse apiResponse = new APIResponse(message, HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }

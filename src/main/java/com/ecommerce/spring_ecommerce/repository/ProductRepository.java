@@ -2,6 +2,8 @@ package com.ecommerce.spring_ecommerce.repository;
 
 import com.ecommerce.spring_ecommerce.model.Category;
 import com.ecommerce.spring_ecommerce.model.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +17,15 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByCategoryOrderByPriceAsc(Category category);
 
+    Page<Product> findByCategory(Category category, Pageable pageable);
+
     @Query("SELECT e FROM Product e WHERE LOWER(e.name) LIKE %:kw% OR LOWER(e.description) LIKE %:kw%")
     List<Product> findByKeyword(@Param("kw") String keyword);
+
+    @Query(
+            value = "SELECT e FROM Product e WHERE LOWER(e.name) LIKE %:kw% OR LOWER(e.description) LIKE %:kw%",
+            countQuery = "SELECT COUNT(e) FROM Product e WHERE LOWER(e.name) LIKE %:kw% OR LOWER(e.description) LIKE %:kw%"
+    )
+    Page<Product> findByKeyword(@Param("kw") String keyword, Pageable pageable);
 
 }

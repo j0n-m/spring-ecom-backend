@@ -1,5 +1,6 @@
 package com.ecommerce.spring_ecommerce.controller;
 
+import com.ecommerce.spring_ecommerce.config.AppConstants;
 import com.ecommerce.spring_ecommerce.payload.ProductDTO;
 import com.ecommerce.spring_ecommerce.payload.ProductResponse;
 import com.ecommerce.spring_ecommerce.service.ProductService;
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
@@ -19,8 +22,13 @@ public class ProductController {
     }
 
     @GetMapping("/public/products")
-    public ResponseEntity<ProductResponse> getAllProducts() {
-        ProductResponse productResponse = productService.getAllProducts();
+    public ResponseEntity<ProductResponse> getAllProducts(
+            @RequestParam(name = "page", required = false, defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
+            @RequestParam(name = "pageSize", required = false, defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
+            @RequestParam(name = "sortBy", required = false, defaultValue = AppConstants.SORT_PRODUCTS_BY) String sortBy,
+            @RequestParam(name = "sortOrder", required = false, defaultValue = AppConstants.SORT_DIRECTION) String sortOrder
+    ) {
+        ProductResponse productResponse = productService.getAllProducts(pageNumber, pageSize, sortBy, sortOrder);
         return ResponseEntity.ok(productResponse);
     }
 
@@ -31,14 +39,26 @@ public class ProductController {
     }
 
     @GetMapping("/public/categories/{categoryId}/products")
-    public ResponseEntity<ProductResponse> getProductsByCategory(@PathVariable Long categoryId) {
-        ProductResponse productResponse = productService.getProductsByCategoryId(categoryId);
+    public ResponseEntity<ProductResponse> getProductsByCategory(
+            @PathVariable Long categoryId,
+            @RequestParam(name = "page", required = false, defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
+            @RequestParam(name = "pageSize", required = false, defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
+            @RequestParam(name = "sortBy", required = false, defaultValue = AppConstants.SORT_PRODUCTS_BY) String sortBy,
+            @RequestParam(name = "sortOrder", required = false, defaultValue = AppConstants.SORT_DIRECTION) String sortOrder
+    ) {
+        ProductResponse productResponse = productService.getProductsByCategoryId(categoryId, pageNumber, pageSize, sortBy, sortOrder);
         return ResponseEntity.ok(productResponse);
     }
 
     @GetMapping("/public/products/keyword/{keyword}")
-    public ResponseEntity<ProductResponse> getProductsByKeyword(@PathVariable String keyword) {
-        ProductResponse productResponse = productService.getProductsByKeyword(keyword);
+    public ResponseEntity<ProductResponse> getProductsByKeyword(
+            @PathVariable String keyword,
+            @RequestParam(name = "page", required = false, defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
+            @RequestParam(name = "pageSize", required = false, defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
+            @RequestParam(name = "sortBy", required = false, defaultValue = AppConstants.SORT_PRODUCTS_BY) String sortBy,
+            @RequestParam(name = "sortOrder", required = false, defaultValue = AppConstants.SORT_DIRECTION) String sortOrder
+    ) {
+        ProductResponse productResponse = productService.getProductsByKeyword(keyword, pageNumber, pageSize, sortBy, sortOrder);
         return ResponseEntity.ok(productResponse);
     }
 
@@ -56,7 +76,7 @@ public class ProductController {
 
     @PutMapping("/admin/products/{productId}/image")
     public ResponseEntity<ProductDTO> updateProductImage(@PathVariable Long productId,
-                                                         @RequestParam("Image") MultipartFile image) {
+                                                         @RequestParam("image") MultipartFile image) throws IOException {
         ProductDTO productDTO = productService.updateProductImage(productId, image);
         return ResponseEntity.ok(productDTO);
     }
